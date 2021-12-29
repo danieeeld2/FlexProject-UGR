@@ -130,7 +130,8 @@ void print_menu(){
     cout << "1) Mostrar lista de distritos sanitarios" << endl;
     cout << "2) Mostrar datos de un distrito sanitario" << endl;
     cout << "3) Eliminar fichero de datos" << endl;
-    cout << "4) Salir" << endl << endl;
+    cout << "4) Limpiar terminal" << endl;
+    cout << "5) Salir" << endl << endl;
 }
 
 int main(int argc, char *argv[]){
@@ -202,11 +203,16 @@ int main(int argc, char *argv[]){
                 cout << endl << "Fichero html de datos borrado" << endl;
             break;
 
+            case '4':
+                system("clear");
+                cout << "Terminal Limpiada";
+            break;
+
             default:
             break;                
         }
 
-    }while(eleccion != '4');
+    }while(eleccion != '5');
 
     return 0;
 }
