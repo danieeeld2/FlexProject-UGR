@@ -5,3 +5,4 @@ build: mylex.l
 clean:
 	rm CoronaVirusBase
 	rm programa.cpp
+	rm data.html
