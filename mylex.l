@@ -12,28 +12,21 @@
 using namespace std;
 
 vector<string> Lugar;
-vector<int> Poblacion;
-vector<int> Confirmados_PDIA;
-vector<int> Confirmados_PDIA_14dias;
-vector<int> Tasa_PDIA_14dias;
-vector<int> Confirmados_PDIA_7dias;
-vector<int> Tasa_PDIA_7dias;
-vector<int> Total_Confirmados;
-vector<int> Curados;
-vector<int> Fallecidos;
+vector<string> Poblacion;
+vector<string> Confirmados_PDIA;
+vector<string> Confirmados_PDIA_14dias;
+vector<string> Tasa_PDIA_14dias;
+vector<string> Confirmados_PDIA_7dias;
+vector<string> Tasa_PDIA_7dias;
+vector<string> Total_Confirmados;
+vector<string> Curados;
+vector<string> Fallecidos;
 
 string cadena;
 ifstream yyin;
 int cont = 0;
 int aux = 0;
-
-void eliminar_tag1(string a){
-
-}
-
-void eliminar_tag2(string b){
-    
-}
+bool es_municipio = false;
 
 
 %}
@@ -43,7 +36,7 @@ mayus       [A-Z]
 letra       [a-z]
 tilde       .
 numero      ({digito}+)
-lugar       ({mayus}+{letra}*{tilde}*{letra}*)
+lugar       (({mayus}+|{tilde}){letra}*{tilde}*{letra}*)
 lugarespa   ({lugar}\b{lugar})
 sitio       ({lugar}|{lugarespa}+)
 simbolo     [\<\>\/]
@@ -52,7 +45,7 @@ exclusion   [^ \t\n]+
 TarLug      ("<caption caption=")
 TarFin      ("/>")
 TarNum      ("val=")
-TarNFin     (".0")
+Punto       (".")
 comilla     ("\"")
 
 
@@ -61,61 +54,71 @@ comilla     ("\"")
 {TarLug}{comilla}{sitio}{comilla}{TarFin} {
                                     if(aux>=13){    
                                         cadena = string(YYText());
-                                        eliminar_tag1(cadena);
-                                        Lugar.push_back(cadena);
+                                        size_t first = cadena.find_last_of("=");
+                                        string recortado = cadena.substr(first+2,cadena.size()-first-2-3);
+                                        if(recortado.find(string("Municipios de"))!=string::npos)
+                                            es_municipio = true;
+                                        else
+                                            es_municipio = false;
+                                        if(!es_municipio)
+                                            Lugar.push_back(recortado);
                                     }
                                     aux++;
 }
 
-{TarNum}{comilla}{numero}{TarNFin} {
+{TarNum}{comilla}{numero}{Punto}{numero}{comilla} {
                                     cont++;
-                                    cadena = yytext;
-                                    eliminar_tag2(cadena);
+                                    cadena = string(YYText());
+                                    size_t first = cadena.find_last_of("=");
+                                    string recortado = cadena.substr(first+2,cadena.size()-first-2-1);
 
-                                    switch (cont){
-                                        case '1':
-                                            Poblacion.push_back(stoi(cadena));
-                                        break;
+                                    if(!es_municipio){
+                                        switch (cont){
+                                            case 1:
+                                                Poblacion.push_back(recortado);
+                                            break;
 
-                                        case '2':
-                                            Confirmados_PDIA.push_back(stoi(cadena));
-                                        break;
+                                            case 2:
+                                                Confirmados_PDIA.push_back(recortado);
+                                            break;
 
-                                        case '3':
-                                        break;
+                                            case 3:
+                                            break;
 
-                                        case '4':
-                                            Confirmados_PDIA_14dias.push_back(stoi(cadena));
-                                        break;
+                                            case 4:
+                                                Confirmados_PDIA_14dias.push_back(recortado);
+                                            break;
 
-                                        case '5':
-                                            Tasa_PDIA_14dias.push_back(stoi(cadena));
-                                        break;
+                                            case 5:
+                                                Tasa_PDIA_14dias.push_back(recortado);
+                                            break;
 
-                                        case '6':
-                                            Confirmados_PDIA_7dias.push_back(stoi(cadena));
-                                        break;
+                                            case 6:
+                                                Confirmados_PDIA_7dias.push_back(recortado);
+                                            break;
 
-                                        case '7':
-                                            Tasa_PDIA_7dias.push_back(stoi(cadena));
-                                        break;
+                                            case 7:
+                                                Tasa_PDIA_7dias.push_back(recortado);
+                                            break;
 
-                                        case '8':
-                                            Total_Confirmados.push_back(stoi(cadena));
-                                        break;
+                                            case 8:
+                                                Total_Confirmados.push_back(recortado);
+                                            break;
 
-                                        case '9':
-                                        break;
+                                            case 9:
+                                            break;
 
-                                        case '10':
-                                            Curados.push_back(stoi(cadena));
-                                        break;
+                                            case 10:
+                                                Curados.push_back(recortado);
+                                            break;
 
-                                        case '11':
-                                            Fallecidos.push_back(stoi(cadena));
-                                            cont=0;
-                                        break;
-                                    }
+                                            case 11:
+                                                Fallecidos.push_back(recortado);
+                                                cont=0;
+                                            break;
+                                        }
+                                    }else
+                                        cont = 0;
 }
 
 %%
@@ -187,7 +190,6 @@ int main(int argc, char *argv[]){
                 }
                 if(posicion==Lugar.size()){
                     cout << endl << "Distrito no encontrado " << endl;
-                    cout << "Poblacion:\t" << Poblacion[0] << endl;
                 }else{
                     cout << "=================== Datos Distrito " << distrito << " ===================" << endl;
                     cout << "Poblacion:\t" << Poblacion[posicion] << endl;
