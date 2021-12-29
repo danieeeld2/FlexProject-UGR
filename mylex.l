@@ -135,7 +135,6 @@ void print_menu(){
 
 int main(int argc, char *argv[]){
     char eleccion = '0';
-    string distrito;
     int posicion = 0;
     bool encontrado = false;
 
@@ -174,24 +173,17 @@ int main(int argc, char *argv[]){
             case '1':
                 cout << "=================== Lista de distritos sanitarios ===================" << endl;
                 for(int i=0; i<Lugar.size(); i++)
-                    cout << Lugar[i] << endl;
+                    cout << i << ") " << Lugar[i] << endl;
                 cout << endl;
             break;
 
             case '2':
                 cout << endl << "Introduce un distrito: ";
-                cin >> distrito;
-                posicion = Lugar.size();
-                for(int i=0; i<Lugar.size() && !encontrado;i++){
-                    if(Lugar[i] == distrito){
-                        posicion = i;
-                        encontrado = true;
-                    }
-                }
-                if(posicion==Lugar.size()){
+                cin >> posicion;
+                if(posicion>=Lugar.size()){
                     cout << endl << "Distrito no encontrado " << endl;
                 }else{
-                    cout << "=================== Datos Distrito " << distrito << " ===================" << endl;
+                    cout << "=================== Datos Distrito " << Lugar[posicion] << " ===================" << endl;
                     cout << "Poblacion:\t" << Poblacion[posicion] << endl;
                     cout << "Confirmados PDIA:\t" << Confirmados_PDIA[posicion] << endl;
                     cout << "Confirmados PDIA 14 días:\t" << Confirmados_PDIA_14dias[posicion] << endl;
